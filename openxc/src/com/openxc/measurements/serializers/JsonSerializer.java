@@ -2,8 +2,7 @@ package com.openxc.measurements.serializers;
 
 import java.io.IOException;
 import java.io.StringWriter;
-
-import java.text.DecimalFormat;
+import java.util.Locale;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -16,8 +15,7 @@ public class JsonSerializer implements MeasurementSerializer {
     public static final String VALUE_FIELD = "value";
     public static final String EVENT_FIELD = "event";
     public static final String TIMESTAMP_FIELD = "timestamp";
-    private static DecimalFormat sTimestampFormatter =
-            new DecimalFormat("##########.000000");
+
 
     public static String serialize(String name, Object value, Object event,
             long timestamp) {
@@ -40,10 +38,14 @@ public class JsonSerializer implements MeasurementSerializer {
             if(timestamp != 0) {
                 gen.writeFieldName(TIMESTAMP_FIELD);
                 // serialized measurements represent the timestamp as seconds
-                // with a fracitonal part
-                gen.writeRawValue(sTimestampFormatter.format(timestamp / 1000));
+                // with a fractional part
+
+                gen.writeRawValue(String.format(Locale.US,"%.6f",(double) timestamp / 1000.0)); // MO 2013-11-08: Used new formatter and changed from long to double calculation
+
             }
 
+            
+            
             gen.writeEndObject();
             gen.close();
         } catch(IOException e) {
